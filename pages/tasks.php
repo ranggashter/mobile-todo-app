@@ -346,6 +346,12 @@ if ($team_id) {
             <span class="icon">👤</span>
             <span>Profile</span>
           </a>
+                    <a href="<?= $base_url ?>/pages/draft.php" 
+     class="nav-item <?= basename($_SERVER['PHP_SELF']) == 'draft.php' ? 'active' : '' ?>" 
+     aria-label="Draft">
+    <span class="icon">📝</span>
+    <span>Draft</span>
+  </a>
         </nav>
       </div>
       <div class="smartphone-home-button"></div>
