@@ -28,11 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assignee = $_POST['assignee_id'] ?? null;
     $category_id = $_POST['category_id'] ?? null;
     $t_team = (int)($_POST['team_id'] ?? 0);
+
+    // ambil status dari tombol (draft/published)
+    $status = $_POST['status'] ?? 'published';
+
     if ($t_team && $title) {
       $pdo->prepare("INSERT INTO tasks 
-        (team_id, category_id, title, description, assignee_id, priority, due_date, created_by) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-        ->execute([$t_team, $category_id ?: null, $title, $desc, $assignee ?: null, $priority, $due ?: null, $user_id]);
+        (team_id, category_id, title, description, assignee_id, priority, due_date, created_by, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        ->execute([$t_team, $category_id ?: null, $title, $desc, $assignee ?: null, $priority, $due ?: null, $user_id, $status]);
+
       header("Location: tasks.php?team_id=$t_team"); exit;
     }
   }
@@ -95,11 +100,12 @@ if ($team_id) {
   $cats->execute([$team_id]);
   $categories = $cats->fetchAll();
 
+  // hanya tampilkan yang published
   $tasks = $pdo->prepare("SELECT t.*, c.name AS category_name, u.name AS assignee_name 
     FROM tasks t
     LEFT JOIN categories c ON c.id=t.category_id
     LEFT JOIN users u ON u.id=t.assignee_id
-    WHERE t.team_id=? 
+    WHERE t.team_id=? AND t.status='published'
     ORDER BY t.completed ASC, t.priority='high' DESC, t.priority='medium' DESC, t.due_date IS NULL, t.due_date ASC");
   $tasks->execute([$team_id]);
   $taskRows = $tasks->fetchAll();
@@ -186,7 +192,10 @@ if ($team_id) {
                         <?php endforeach; ?>
                       </select>
                     </div>
-                    <button class="btn primary w-full">Tambah tugas</button>
+                    <div class="form-group">
+                      <button type="submit" name="status" value="draft" class="btn secondary w-full">Simpan dulu</button>
+                      <button type="submit" name="status" value="published" class="btn primary w-full">Tambah & Publish</button>
+                    </div>
                   </form>
                 </div>
               </details>
@@ -247,7 +256,7 @@ if ($team_id) {
                               <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                               <input type="hidden" name="team_id" value="<?= (int)$team_id ?>">
                               <div class="form-group">
-                                <label>JUdul</label>
+                                <label>Judul</label>
                                 <input type="text" name="title" value="<?= htmlspecialchars($row['title']) ?>" required class="form-input">
                               </div>
                               <div class="form-group">

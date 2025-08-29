@@ -692,7 +692,7 @@ body {
   background-color: var(--bg-primary);
   display: flex;
   justify-content: space-around;
-  padding: var(--space-lg) 0;
+  padding: var(--space-lg) var(--space-sm);
   border-top: 1px solid var(--border-light);
   margin-top: auto;
   border-bottom-left-radius: var(--radius-3xl);
@@ -703,6 +703,7 @@ body {
   position: sticky;
   bottom: 0;
   z-index: var(--z-sticky);
+  gap: var(--space-xs);
 }
 
 .nav-item {
@@ -712,10 +713,13 @@ body {
   text-decoration: none;
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) var(--space-sm);
   border-radius: var(--radius-md);
   transition: all 0.2s ease;
-  min-width: 60px;
+  min-width: 50px;
+  max-width: 65px;
+  flex: 1;
+  text-align: center;
 }
 
 .nav-item:hover,
@@ -731,9 +735,187 @@ body {
 }
 
 .nav-item .icon {
-  font-size: 22px;
+  font-size: 20px;
   margin-bottom: 4px;
   transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.nav-item span:last-child {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* =========================
+   Responsive Bottom Navigation
+========================= */
+
+/* Tablet Portrait */
+@media (max-width: 768px) {
+  .bottom-nav {
+    padding: var(--space-md) var(--space-xs);
+    gap: 2px;
+  }
+  
+  .nav-item .icon {
+    font-size: 18px;
+  }
+  
+  .nav-item span:last-child {
+    font-size: 9px;
+  }
+  
+  .nav-item {
+    min-width: 45px;
+    max-width: 60px;
+    padding: var(--space-sm) 4px;
+  }
+}
+
+/* Mobile Devices */
+@media (max-width: 767px) {
+  .bottom-nav {
+    border-radius: 0 !important;
+    padding: var(--space-sm) var(--space-xs) !important;
+    padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom)) !important;
+    margin-bottom: 0 !important;
+    gap: 1px;
+  }
+  
+  .nav-item {
+    min-width: 42px;
+    max-width: 55px;
+    padding: 6px 2px;
+    font-size: 9px;
+  }
+  
+  .nav-item .icon {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  
+  .nav-item span:last-child {
+    font-size: 8px;
+    line-height: 1.1;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .nav-item {
+    min-width: 38px;
+    max-width: 50px;
+    padding: 4px 1px;
+  }
+  
+  .nav-item .icon {
+    font-size: 14px;
+  }
+  
+  .nav-item span:last-child {
+    font-size: 7px;
+  }
+  
+  .bottom-nav {
+    padding: 8px 2px !important;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Very Small Devices */
+@media (max-width: 320px) {
+  .nav-item {
+    min-width: 32px;
+    max-width: 45px;
+  }
+  
+  .nav-item .icon {
+    font-size: 12px;
+  }
+  
+  .nav-item span:last-child {
+    font-size: 6px;
+    font-weight: 600;
+  }
+}
+
+/* Handle landscape orientation on mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .bottom-nav {
+    padding: 4px var(--space-xs);
+    gap: 1px;
+  }
+  
+  .nav-item {
+    padding: 2px 1px;
+    min-width: 35px;
+    max-width: 48px;
+  }
+  
+  .nav-item .icon {
+    font-size: 12px;
+    margin-bottom: 1px;
+  }
+  
+  .nav-item span:last-child {
+    font-size: 6px;
+  }
+}
+
+/* =========================
+   Enhanced Navigation States
+========================= */
+.nav-item:active {
+  transform: translateY(0);
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.nav-item:focus {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+/* Add subtle gradient for better visual hierarchy */
+.bottom-nav {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #fafbfc 100%);
+  border-top: 1px solid var(--border-light);
+}
+
+/* Improve readability with better contrast */
+.nav-item {
+  color: var(--gray-600);
+}
+
+.nav-item:hover,
+.nav-item:focus,
+.nav-item.active {
+  color: var(--primary-blue);
+  background-color: rgba(37, 99, 235, 0.1);
+}
+
+/* Add loading state for navigation items */
+.nav-item.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.nav-item.loading .icon {
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
+  }
 }
 
 /* =========================
@@ -1423,3 +1605,395 @@ body {
 /* =========================
    End of Global Styles
 ========================= */
+
+
+/* =========================
+   Task Components
+========================= */
+.checkbox {
+  flex-shrink: 0;
+}
+
+.check-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-lg);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.check-btn:hover {
+  background-color: var(--gray-200);
+}
+
+.grow {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.task-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+  align-items: flex-start;
+}
+
+.task-details {
+  position: relative;
+}
+
+.task-details .details-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  z-index: var(--z-dropdown);
+  margin-top: var(--space-sm);
+}
+
+/* Priority Indicators */
+.priority-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.priority-indicator.high { background-color: var(--danger-red); }
+.priority-indicator.medium { background-color: var(--warning-orange); }
+.priority-indicator.low { background-color: var(--success-green); }
+
+.due-soon {
+  color: var(--danger-red);
+  font-weight: 500;
+}
+
+/* =========================
+   Task Form Styles
+========================= */
+.task-form {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  margin-bottom: var(--space-2xl);
+  animation: fadeInUp 0.4s ease;
+}
+
+.task-form .form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.task-form .form-group:last-child {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.task-form .btn.secondary {
+  background-color: var(--gray-200);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.task-form .btn.secondary:hover {
+  background-color: var(--gray-300);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   Task List Styles
+========================= */
+.task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+}
+
+.task-list li {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  border-left: 4px solid var(--primary-blue);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.task-list li.done {
+  opacity: 0.7;
+  background-color: var(--gray-50);
+  border-left-color: var(--success-green);
+  text-decoration: line-through;
+}
+
+.task-list li strong {
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: 600;
+  display: block;
+  margin-bottom: var(--space-sm);
+  line-height: 1.4;
+}
+
+.task-list li.done strong {
+  color: var(--text-secondary);
+}
+
+/* Task metadata styling */
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  align-items: center;
+}
+
+.task-category,
+.task-assignee,
+.task-due-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px var(--space-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--gray-100);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.task-category {
+  background-color: #e0f2fe;
+  color: #0277bd;
+}
+
+.task-assignee {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.task-due-date {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+/* Team selection form */
+.form-inline.mb-3 {
+  margin-bottom: var(--space-2xl);
+  display: flex;
+  justify-content: center;
+}
+
+.form-inline.mb-3 select {
+  min-width: 200px;
+  padding: var(--space-md) var(--space-lg);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.form-inline.mb-3 select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Section titles */
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  position: relative;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+  border-radius: 2px;
+}
+
+h2 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+h2::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: var(--primary-blue);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Empty state for tasks */
+.empty-tasks {
+  text-align: center;
+  padding: 40px var(--space-xl);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-light);
+  color: var(--text-secondary);
+}
+
+.empty-tasks p {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-sm);
+}
+
+/* Container adjustments for tasks page */
+.container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+/* =========================
+   Task List Enhancements
+========================= */
+
+/* Style untuk task metadata yang menggunakan format PHP seperti [...] dan → */
+.task-list li {
+  position: relative;
+}
+
+.task-list li strong {
+  display: inline;
+  margin-bottom: 0;
+  margin-right: var(--space-sm);
+}
+
+/* Style untuk [...] kategori */
+.task-list li strong + * {
+  display: inline-block;
+  margin-right: var(--space-sm);
+}
+
+/* Style untuk bagian setelah judul task */
+.task-list li > * {
+  line-height: 1.6;
+}
+
+/* Mengatur spacing untuk elemen dalam task list item */
+.task-list li {
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+/* Style khusus untuk bracket notation */
+.task-bracket {
+  color: var(--primary-blue);
+  font-weight: 500;
+  background-color: #e0f2fe;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+}
+
+/* Style untuk arrow notation */
+.task-arrow {
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+
+.task-assignee-info {
+  color: #7b1fa2;
+  font-weight: 500;
+  background-color: #f3e5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+}
+
+/* Style untuk tanggal */
+.task-date {
+  color: #f57c00;
+  font-weight: 500;
+  background-color: #fff3e0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+}
+
+/* Hover effects untuk task items */
+.task-list li:hover .task-bracket,
+.task-list li:hover .task-assignee-info,
+.task-list li:hover .task-date {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* Priority styling based on task content */
+.task-priority-high {
+  border-left-color: var(--danger-red) !important;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+}
+
+.task-priority-medium {
+  border-left-color: var(--warning-orange) !important;
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+}
+
+.task-priority-low {
+  border-left-color: var(--success-green) !important;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+/* Task form button styling improvements */
+.task-form .form-group:last-child {
+  background-color: var(--bg-secondary);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  margin: var(--space-lg) -var(--space-xl) -var(--space-xl);
+}
+
+.task-form .btn.secondary {
+  background: linear-gradient(135deg, var(--gray-200) 0%, var(--gray-100) 100%);
+  border: 1px solid var(--gray-300);
+}
+
+.task-form .btn.primary {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.task-form .btn.primary:hover {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
