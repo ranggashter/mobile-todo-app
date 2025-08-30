@@ -49,15 +49,17 @@ $users = $pdo->query("SELECT id, name, email FROM users ORDER BY name ASC")->fet
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Teams • Mobile Todo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= $base_url ?>/assets/css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Teams • Mobile Todo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="<?= $base_url ?>/assets/css/style.css">
 </head>
+
 <body>
   <div class="smartphone-container">
     <div class="smartphone">
@@ -123,37 +125,21 @@ $users = $pdo->query("SELECT id, name, email FROM users ORDER BY name ASC")->fet
             </div>
           </div>
         </section>
-        
+
         <!-- Bottom Navigation inside smartphone -->
         <nav class="bottom-nav">
-          <a href="<?= $base_url ?>/index.php" class="nav-item" aria-label="Home">
-            <span class="icon">🏠</span>
-            <span>Home</span>
-          </a>
-          <a href="<?= $base_url ?>/pages/teams.php" class="nav-item active" aria-label="Team">
-            <span class="icon">👥</span>
-            <span>Team</span>
-          </a>
-          <a href="<?= $base_url ?>/pages/tasks.php" class="nav-item" aria-label="Tasks">
-            <span class="icon">✅</span>
-            <span>Tasks</span>
-          </a>
-          <a href="<?= $base_url ?>/pages/profile.php" class="nav-item" aria-label="Profile">
-            <span class="icon">👤</span>
-            <span>Profile</span>
-          </a>
-          <a href="<?= $base_url ?>/pages/draft.php" 
-     class="nav-item <?= basename($_SERVER['PHP_SELF']) == 'draft.php' ? 'active' : '' ?>" 
-     aria-label="Draft">
-    <span class="icon">📝</span>
-    <span>Draft</span>
-  </a>
-
+          <a href="<?= $base_url ?>/index.php" class="nav-item" aria-label="Home"><span class="icon">🏠</span><span>Home</span></a>
+          <a href="<?= $base_url ?>/pages/teams.php" class="nav-item" aria-label="Team"><span class="icon">👥</span><span>Team</span></a>
+          <a href="<?= $base_url ?>/pages/tasks.php" class="nav-item" aria-label="Tasks"><span class="icon">✅</span><span>Tasks</span></a>
+          <a href="<?= $base_url ?>/pages/draft.php" class="nav-item <?= basename($_SERVER['PHP_SELF']) == 'draft.php' ? 'active' : '' ?>" aria-label="Draft"><span class="icon">📝</span><span>Draft</span></a>
+          <a href="<?= $base_url ?>/pages/categories.php" class="nav-item <?= basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'active' : '' ?>" aria-label="Categories"><span class="icon">📂</span><span>Categories</span></a>
+          <a href="<?= $base_url ?>/pages/profile.php" class="nav-item" aria-label="Profile"><span class="icon">👤</span><span>Profile</span></a>
         </nav>
       </div>
       <div class="smartphone-home-button"></div>
     </div>
   </div>
-<script src="<?= $base_url ?>/assets/js/app.js"></script>
+  <script src="<?= $base_url ?>/assets/js/app.js"></script>
 </body>
+
 </html>

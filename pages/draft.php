@@ -1,6 +1,12 @@
 <?php
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/session.php';
+require_login();
+
+$config = require __DIR__ . '/../config/config.php';
+$base_url = rtrim($config['app']['base_url'], '/');
+
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/header.php';
 
 $user_id = current_user_id();
 $team_id = $_GET['team_id'] ?? null;
@@ -18,15 +24,21 @@ $teams = $stmt->fetchAll();
 // handle jika user tidak punya tim
 if (!$teams) {
     echo '<div class="flash-message error">Tidak ada tim yang ditemukan. Silakan buat atau gabung tim terlebih dahulu.</div>';
-    echo '<div class="auth-footer"><a href="' . $base_url . '/pages/teams.php">Kembali ke Teams</a></div>';
-    require_once __DIR__ . '/../includes/footer.php';
+    echo '<div><a href="' . $base_url . '/pages/teams.php">Kembali ke Teams</a></div>';
+    ?>
+    <nav class="bottom-nav">
+        <a href="<?= $base_url ?>/index.php" class="nav-item" aria-label="Home"><span class="icon">🏠</span><span>Home</span></a>
+        <a href="<?= $base_url ?>/pages/teams.php" class="nav-item" aria-label="Team"><span class="icon">👥</span><span>Team</span></a>
+        <a href="<?= $base_url ?>/pages/tasks.php" class="nav-item" aria-label="Tasks"><span class="icon">✅</span><span>Tasks</span></a>
+        <a href="<?= $base_url ?>/pages/draft.php" class="nav-item <?= basename($_SERVER['PHP_SELF'])=='draft.php'?'active':'' ?>" aria-label="Draft"><span class="icon">📝</span><span>Draft</span></a>
+        <a href="<?= $base_url ?>/pages/categories.php" class="nav-item <?= basename($_SERVER['PHP_SELF'])=='categories.php'?'active':'' ?>" aria-label="Categories"><span class="icon">📂</span><span>Categories</span></a>
+        <a href="<?= $base_url ?>/pages/profile.php" class="nav-item" aria-label="Profile"><span class="icon">👤</span><span>Profile</span></a>
+    </nav>
+    <?php
     exit;
 }
-
 // jika team_id belum ditentukan, pakai tim pertama user
-if (!$team_id) {
-    $team_id = $teams[0]['id'];
-}
+if (!$team_id) $team_id = $teams[0]['id'];
 
 // pastikan user anggota tim yang dipilih
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM team_members WHERE team_id=? AND user_id=?");
@@ -160,117 +172,37 @@ $drafts = $stmt->fetchAll();
     </div>
 </div>
 
-<!-- Bottom navigation -->
+
 <nav class="bottom-nav">
     <a href="<?= $base_url ?>/index.php" class="nav-item" aria-label="Home"><span class="icon">🏠</span><span>Home</span></a>
     <a href="<?= $base_url ?>/pages/teams.php" class="nav-item" aria-label="Team"><span class="icon">👥</span><span>Team</span></a>
     <a href="<?= $base_url ?>/pages/tasks.php" class="nav-item" aria-label="Tasks"><span class="icon">✅</span><span>Tasks</span></a>
+    <a href="<?= $base_url ?>/pages/draft.php" class="nav-item <?= basename($_SERVER['PHP_SELF'])=='draft.php'?'active':'' ?>" aria-label="Draft"><span class="icon">📝</span><span>Draft</span></a>
+    <a href="<?= $base_url ?>/pages/categories.php" class="nav-item <?= basename($_SERVER['PHP_SELF'])=='categories.php'?'active':'' ?>" aria-label="Categories"><span class="icon">📂</span><span>Categories</span></a>
     <a href="<?= $base_url ?>/pages/profile.php" class="nav-item" aria-label="Profile"><span class="icon">👤</span><span>Profile</span></a>
-    <a href="<?= $base_url ?>/pages/draft.php?team_id=<?= $team_id ?>" class="nav-item <?= basename($_SERVER['PHP_SELF'])=='draft.php' ? 'active':'' ?>" aria-label="Draft"><span class="icon">📝</span><span>Draft</span></a>
 </nav>
 
 
-
-
-<style>
-/* Draft-specific styles */
-.drafts-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xl);
-}
-
-.draft-card {
-    background-color: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-light);
-    border-left: 4px solid var(--warning-orange);
-    transition: all 0.2s ease;
-}
-
-.draft-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.draft-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-}
-
-.draft-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-}
-
-.draft-meta {
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--border-light);
-}
-
-.draft-actions {
-    display: flex;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--border-light);
-}
-
-.draft-actions .btn {
-    flex: 1;
-    min-width: 120px;
-}
-
-.text-muted {
-    color: var(--text-muted);
-    font-size: var(--text-sm);
-}
-
-/* Priority badge styling */
-.priority-badge {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.priority-badge.high {
-    background-color: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-}
-
-.priority-badge.medium {
-    background-color: #fffbeb;
-    color: #92400e;
-    border: 1px solid #fde68a;
-}
-
-.priority-badge.low {
-    background-color: #f0fdf4;
-    color: #166534;
-    border: 1px solid #bbf7d0;
-}
-
-/* Mobile responsive adjustments */
+<!-- Draft CSS -->
+<!-- <style>
+.drafts-list { display: flex; flex-direction: column; gap: var(--space-xl); }
+.draft-card { background-color: var(--bg-primary); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); border: 1px solid var(--border-light); border-left: 4px solid var(--warning-orange); transition: all 0.2s ease; }
+.draft-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.draft-form { display: flex; flex-direction: column; gap: var(--space-lg); }
+.draft-content { display: flex; flex-direction: column; gap: var(--space-lg); }
+.draft-meta { padding-top: var(--space-md); border-top: 1px solid var(--border-light); }
+.draft-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; padding-top: var(--space-lg); border-top: 1px solid var(--border-light); }
+.draft-actions .btn { flex: 1; min-width: 120px; }
+.text-muted { color: var(--text-muted); font-size: var(--text-sm); }
+.priority-badge { padding: 2px 6px; border-radius: 4px; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.priority-badge.high { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.priority-badge.medium { background-color: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+.priority-badge.low { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 @media (max-width: 480px) {
-    .draft-actions {
-        flex-direction: column;
-    }
-    
-    .draft-actions .btn {
-        width: 100%;
-        flex: none;
-    }
-    
-    .draft-card {
-        padding: var(--space-lg);
-    }
+    .draft-actions { flex-direction: column; }
+    .draft-actions .btn { width: 100%; flex: none; }
+    .draft-card { padding: var(--space-lg); }
 }
-</style>
+
+</style> -->
+<link rel="stylesheet" href="<?= $base_url ?>/assets/css/style.css">
