@@ -444,8 +444,8 @@ if (isset($_SESSION['user'])) {
           <h1>Create Account 🚀</h1>
           <p>Get started with your free account</p>
         </div>
-
-        <?php if (!empty($_GET['err'])): ?>
+        <div class="content-scrollable">
+ <?php if (!empty($_GET['err'])): ?>
           <div class="toast error"><?= htmlspecialchars($_GET['err']) ?></div>
         <?php endif; ?>
 
@@ -475,6 +475,9 @@ if (isset($_SESSION['user'])) {
           Already have an account? <a href="<?= $base_url ?>/login.php">Sign In</a>
         </p>
       </div>
+        </div>
+
+       
       <div class="smartphone-home-button"></div>
     </div>
   </div>

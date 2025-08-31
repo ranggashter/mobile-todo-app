@@ -70,61 +70,63 @@ $users = $pdo->query("SELECT id, name, email FROM users ORDER BY name ASC")->fet
           <a href="<?= $base_url ?>/actions/logout.php" class="btn danger small">Logout</a>
         </header>
 
-        <section class="teams-section">
-          <div class="form-create-team card">
-            <form method="post">
-              <input type="hidden" name="create_team" value="1">
-              <div class="form-group-inline">
-                <input type="text" name="team_name" placeholder="Nama team baru" required class="form-input">
-                <button class="btn primary">Buat Team</button>
-              </div>
-            </form>
-          </div>
+<section class="teams-section">
+  <!-- Form create team -->
+  <div class="form-create-team card">
+    <form method="post">
+      <input type="hidden" name="create_team" value="1">
+      <div class="form-group-inline">
+        <input type="text" name="team_name" placeholder="Nama team baru" required class="form-input">
+        <button class="btn primary">Buat Team</button>
+      </div>
+    </form>
+  </div>
 
-          <div class="card">
-            <div class="content-scrollable">
-              <section class="teams-list">
-                <?php if (empty($teams)): ?>
-                  <div class="empty-state">
-                    <p>Anda belum memiliki tim.</p>
-                    <p class="muted">Buat tim pertama Anda untuk memulai!</p>
-                  </div>
-                <?php else: ?>
-                  <?php foreach ($teams as $t): ?>
-                    <div class="team-card">
-                      <div class="team-main">
-                        <div class="team-info">
-                          <h3 class="team-name"><?= htmlspecialchars($t['name']) ?></h3>
-                          <span class="team-members"><?= (int)$t['members'] ?> anggota</span>
-                        </div>
-                        <details class="team-details">
-                          <summary class="details-summary">Tambah anggota</summary>
-                          <div class="details-content">
-                            <form method="post" class="add-member-form">
-                              <input type="hidden" name="add_member" value="1">
-                              <input type="hidden" name="team_id" value="<?= (int)$t['id'] ?>">
-                              <div class="form-group">
-                                <select name="user_id" required class="form-select">
-                                  <option value="">Pilih untuk menambahkan</option>
-                                  <?php foreach ($users as $u): ?>
-                                    <option value="<?= (int)$u['id'] ?>">
-                                      <?= htmlspecialchars($u['name']) ?> (<?= htmlspecialchars($u['email']) ?>)
-                                    </option>
-                                  <?php endforeach; ?>
-                                </select>
-                              </div>
-                              <button class="btn primary small">Tambah anggota</button>
-                            </form>
-                          </div>
-                        </details>
-                      </div>
-                    </div>
-                  <?php endforeach; ?>
-                <?php endif; ?>
-              </section>
-            </div>
+  <!-- Scrollable teams list -->
+  <div class="content-scrollable">
+    <div class="card">
+      <section class="teams-list">
+        <?php if (empty($teams)): ?>
+          <div class="empty-state">
+            <p>Anda belum memiliki tim.</p>
+            <p class="muted">Buat tim pertama Anda untuk memulai!</p>
           </div>
-        </section>
+        <?php else: ?>
+          <?php foreach ($teams as $t): ?>
+            <div class="team-card">
+              <div class="team-main">
+                <div class="team-info">
+                  <h3 class="team-name"><?= htmlspecialchars($t['name']) ?></h3>
+                  <span class="team-members"><?= (int)$t['members'] ?> anggota</span>
+                </div>
+                <details class="team-details">
+                  <summary class="details-summary">Tambah anggota</summary>
+                  <div class="details-content">
+                    <form method="post" class="add-member-form">
+                      <input type="hidden" name="add_member" value="1">
+                      <input type="hidden" name="team_id" value="<?= (int)$t['id'] ?>">
+                      <div class="form-group">
+                        <select name="user_id" required class="form-select">
+                          <option value="">Pilih untuk menambahkan</option>
+                          <?php foreach ($users as $u): ?>
+                            <option value="<?= (int)$u['id'] ?>">
+                              <?= htmlspecialchars($u['name']) ?> (<?= htmlspecialchars($u['email']) ?>)
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+                      <button class="btn primary small">Tambah anggota</button>
+                    </form>
+                  </div>
+                </details>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </section>
+    </div>
+  </div>
+</section>
 
         <!-- Bottom Navigation inside smartphone -->
         <nav class="bottom-nav">
@@ -140,6 +142,30 @@ $users = $pdo->query("SELECT id, name, email FROM users ORDER BY name ASC")->fet
     </div>
   </div>
   <script src="<?= $base_url ?>/assets/js/app.js"></script>
+
+  <style>
+    .smartphone-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* isi penuh layar smartphone */
+}
+
+/* Bagian tengah (teams-section) fleksibel */
+.teams-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* biar child yang scrollable aja */
+}
+
+/* Scrollable list tim */
+.content-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* halus di iOS */
+  padding: 0.5rem;
+}
+  </style>
 </body>
 
 </html>

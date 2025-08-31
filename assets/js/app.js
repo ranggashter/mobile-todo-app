@@ -4,3 +4,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 2500);
   });
 });
+
+

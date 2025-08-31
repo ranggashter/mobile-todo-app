@@ -19,57 +19,67 @@ $stmt = $pdo->prepare("SELECT t.id, t.name
 $stmt->execute([$user_id]);
 $teams = $stmt->fetchAll();
 
+$error_message = null;
+$team_name = null;
+$completed_tasks = [];
+
 if (!$teams) {
-    echo '<div class="flash-message error">Tidak ada tim yang ditemukan.</div>';
-    exit;
+    $error_message = "Tidak ada tim yang ditemukan.";
+} else {
+    if (!$team_id) {
+        $team_id = $teams[0]['id'];
+    }
+
+    // pastikan user anggota tim
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM team_members WHERE team_id=? AND user_id=?");
+    $stmt->execute([$team_id, $user_id]);
+    if (!$stmt->fetchColumn()) {
+        $error_message = "Anda tidak memiliki akses ke tim ini.";
+    } else {
+        // ambil nama tim
+        $stmt = $pdo->prepare("SELECT name FROM teams WHERE id=?");
+        $stmt->execute([$team_id]);
+        $team_name = $stmt->fetchColumn();
+
+        // ambil tugas selesai
+        $stmt = $pdo->prepare("
+            SELECT t.*, u.name AS creator_name, c.name AS category_name
+            FROM tasks t
+            LEFT JOIN users u ON t.created_by=u.id
+            LEFT JOIN categories c ON t.category_id=c.id
+            WHERE t.team_id=? AND t.completed=1
+            ORDER BY t.completed_at DESC
+        ");
+        $stmt->execute([$team_id]);
+        $completed_tasks = $stmt->fetchAll();
+    }
 }
-
-if (!$team_id) {
-    $team_id = $teams[0]['id'];
-}
-
-// pastikan user anggota tim
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM team_members WHERE team_id=? AND user_id=?");
-$stmt->execute([$team_id, $user_id]);
-if (!$stmt->fetchColumn()) {
-    echo '<div class="flash-message error">Anda tidak memiliki akses ke tim ini.</div>';
-    exit;
-}
-
-// ambil nama tim
-$stmt = $pdo->prepare("SELECT name FROM teams WHERE id=?");
-$stmt->execute([$team_id]);
-$team_name = $stmt->fetchColumn();
-
-// ambil tugas selesai
-$stmt = $pdo->prepare("
-    SELECT t.*, u.name AS creator_name, c.name AS category_name
-    FROM tasks t
-    LEFT JOIN users u ON t.created_by=u.id
-    LEFT JOIN categories c ON t.category_id=c.id
-    WHERE t.team_id=? AND t.completed=1
-    ORDER BY t.completed_at DESC
-");
-
-$stmt->execute([$team_id]);
-$completed_tasks = $stmt->fetchAll();
 ?>
 
 <div class="screen-header">
     <h1 class="page-title">Tugas Selesai</h1>
+    <a href="<?= $base_url ?>/actions/logout.php" class="btn danger small">Logout</a>
 </div>
 
-<!-- Dropdown pilih tim -->
-<form method="get" action="" class="team-selector" style="margin-bottom: 20px;">
-    <label for="team_id">Pilih Tim:</label>
-    <select name="team_id" id="team_id" onchange="this.form.submit()">
-        <?php foreach($teams as $team): ?>
-            <option value="<?= $team['id'] ?>" <?= $team['id']==$team_id ? 'selected' : '' ?>>
-                <?= htmlspecialchars($team['name']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-</form>
+<?php if ($error_message): ?>
+    <div class="flash-container">
+        <div class="flash-message error"><?= htmlspecialchars($error_message) ?></div>
+    </div>
+<?php endif; ?>
+
+<?php if ($teams): ?>
+    <!-- Dropdown pilih tim -->
+    <form method="get" action="" class="team-selector" style="margin-bottom: 20px;">
+        <label for="team_id">Pilih Tim:</label>
+        <select name="team_id" id="team_id" onchange="this.form.submit()">
+            <?php foreach($teams as $team): ?>
+                <option value="<?= $team['id'] ?>" <?= $team['id']==$team_id ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($team['name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </form>
+<?php endif; ?>
 
 <div class="screen-content">
     <div class="content-scrollable">
@@ -92,14 +102,18 @@ $completed_tasks = $stmt->fetchAll();
                                 <small class="text-muted">
                                     Selesai: <?= date('d M Y H:i', strtotime($task['completed_at'])) ?>
                                     <?php if ($task['creator_name']): ?> | Dibuat oleh <?= htmlspecialchars($task['creator_name']) ?><?php endif; ?>
-                                    <?php if ($task['priority']): ?> | Prioritas: <span class="priority-badge <?= $task['priority'] ?>"><?= ucfirst($task['priority']) ?></span><?php endif; ?>
+                                    <?php if ($task['priority']): ?> | Prioritas: 
+                                        <span class="priority-badge <?= $task['priority'] ?>">
+                                            <?= ucfirst($task['priority']) ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </small>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
-        <?php else: ?>
+        <?php elseif (!$error_message): ?>
             <div class="empty-state">
                 <p>Tidak ada tugas selesai.</p>
                 <p class="muted">Tugas yang selesai akan muncul di sini.</p>
@@ -108,14 +122,14 @@ $completed_tasks = $stmt->fetchAll();
     </div>
 </div>
 
-<!-- Bottom navigation -->
+<!-- Bottom navigation: SELALU ADA -->
 <nav class="bottom-nav">
-    <a href="<?= $base_url ?>/index.php" class="nav-item" aria-label="Home"><span class="icon">🏠</span><span>Home</span></a>
-    <a href="<?= $base_url ?>/pages/teams.php" class="nav-item" aria-label="Team"><span class="icon">👥</span><span>Team</span></a>
-    <a href="<?= $base_url ?>/pages/tasks.php" class="nav-item" aria-label="Tasks"><span class="icon">✅</span><span>Tasks</span></a>
-    <a href="<?= $base_url ?>/pages/draft.php" class="nav-item" aria-label="Draft"><span class="icon">📝</span><span>Draft</span></a>
-    <a href="<?= $base_url ?>/pages/categories.php" class="nav-item" aria-label="Categories"><span class="icon">📂</span><span>Categories</span></a>
-    <a href="<?= $base_url ?>/pages/profile.php" class="nav-item" aria-label="Profile"><span class="icon">👤</span><span>Profile</span></a>
+    <a href="<?= $base_url ?>/index.php" class="nav-item"><span class="icon">🏠</span><span>Home</span></a>
+    <a href="<?= $base_url ?>/pages/teams.php" class="nav-item"><span class="icon">👥</span><span>Team</span></a>
+    <a href="<?= $base_url ?>/pages/tasks.php" class="nav-item"><span class="icon">✅</span><span>Tasks</span></a>
+    <a href="<?= $base_url ?>/pages/draft.php" class="nav-item"><span class="icon">📝</span><span>Draft</span></a>
+    <a href="<?= $base_url ?>/pages/categories.php" class="nav-item"><span class="icon">📂</span><span>Categories</span></a>
+    <a href="<?= $base_url ?>/pages/profile.php" class="nav-item"><span class="icon">👤</span><span>Profile</span></a>
 </nav>
 
 <style>
